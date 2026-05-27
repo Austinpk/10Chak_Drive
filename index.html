@@ -1,261 +1,200 @@
 <!DOCTYPE html>
-<html lang="ur">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>10Chak Drive — Apni Village Ki Apni Ride</title>
-    <link rel="stylesheet" href="style.css">
+    
+    <!-- Google Fonts & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@400;600;700;800&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+    <div class="app-container">
+        <!-- App Bar -->
+        <header class="app-bar">
+            <div class="app-bar__time" id="statusTime">9:41</div>
+            <h1 class="app-bar__title">10Chak Drive</h1>
+            <p class="app-bar__subtitle">Apni Village Ki Apni Ride</p>
+            <div class="app-bar__role-icon" id="formRoleIcon">
+                <i class="fa-solid fa-car"></i>
+            </div>
+        </header>
 
-    <!-- ===== TOAST CONTAINER ===== -->
-    <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+        <!-- Screen 1: Role Selection -->
+        <section class="screen screen-active" id="roleScreen">
+            <h2 class="role-title">Village-First Mobility</h2>
+            <p class="role-subtitle">Apna Role Select Karein</p>
+            
+            <div class="role-cards">
+                <div class="role-card role-card--customer" onclick="app.showForm('customer')">
+                    <div class="role-card__icon">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                    <div class="role-card__content">
+                        <h3>Customer (Sawaari)</h3>
+                        <p>Book your ride easily</p>
+                    </div>
+                </div>
 
-    <!-- ===== LOADING OVERLAY ===== -->
-    <div id="loadingOverlay" class="loading-overlay hidden">
-        <div class="loading-spinner">
-            <div class="spinner-ring"></div>
-            <p class="loading-text">Submitting...</p>
-        </div>
+                <div class="role-card role-card--rider" onclick="app.showForm('rider')">
+                    <div class="role-card__icon">
+                        <i class="fa-solid fa-motorcycle"></i>
+                    </div>
+                    <div class="role-card__content">
+                        <h3>Rider (Driver)</h3>
+                        <p>Earn with your vehicle</p>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 28px; text-align: center; color: var(--text-secondary); font-size: 13px;">
+                <p><i class="fa-solid fa-shield-halved" style="color: var(--primary); margin-right: 6px;"></i> Safe Rides</p>
+                <p style="margin-top: 8px;"><i class="fa-solid fa-bolt" style="color: var(--secondary); margin-right: 6px;"></i> Fast Booking</p>
+                <p style="margin-top: 8px;"><i class="fa-solid fa-house" style="color: var(--primary-light); margin-right: 6px;"></i> Local Support</p>
+            </div>
+        </section>
+
+        <!-- Screen 2: Registration Form -->
+        <section class="screen screen-hidden" id="formScreen">
+            <div class="form-header">
+                <h2 class="form-title" id="formTitle">Registration</h2>
+                <p class="form-subtitle" id="formSubtitle">Fill in your details below</p>
+            </div>
+
+            <div class="progress-bar">
+                <div class="progress-bar__fill" id="progressFill"></div>
+            </div>
+            <div class="progress-label" id="progressLabel">Step 1 of 2</div>
+
+            <form id="regForm" onsubmit="event.preventDefault();">
+                <!-- Personal Info Section -->
+                <div class="form-section">
+                    <div class="section-title">
+                        <i class="fa-solid fa-user"></i> Personal Info
+                    </div>
+
+                    <div class="input-group" id="grp-fullName">
+                        <label for="fullName">
+                            <i class="fa-solid fa-user"></i> Full Name
+                        </label>
+                        <div class="input-wrapper">
+                            <input 
+                                type="text" 
+                                id="fullName" 
+                                placeholder="Naveed Masih"
+                                oninput="app.validateField(this)"
+                                autocomplete="name"
+                            >
+                        </div>
+                        <span class="field-error" id="err-fullName"></span>
+                    </div>
+
+                    <!-- EMAIL INPUT (Replaces Phone) -->
+                    <div class="input-group" id="grp-email">
+                        <label for="email">
+                            <i class="fa-solid fa-envelope"></i> Email Address
+                        </label>
+                        <div class="input-wrapper">
+                            <input 
+                                type="email" 
+                                id="email" 
+                                class="phone-number"
+                                placeholder="example@gmail.com"
+                                oninput="app.validateField(this)"
+                                autocomplete="email"
+                            >
+                        </div>
+                        <span class="field-error" id="err-email"></span>
+                    </div>
+                </div>
+
+                <!-- Rider-Specific Fields -->
+                <div class="form-section hidden" id="riderFields">
+                    <div class="section-title">
+                        <i class="fa-solid fa-motorcycle"></i> Vehicle Details
+                    </div>
+
+                    <div class="security-notice">
+                        <i class="fa-solid fa-circle-exclamation"></i>
+                        <strong>Verification Notice:</strong> Your driving license will be verified via the official government database before account activation.
+                    </div>
+
+                    <div class="input-group" id="grp-vehicleType">
+                        <label for="vehicleType">
+                            <i class="fa-solid fa-truck"></i> Vehicle Type
+                        </label>
+                        <div class="input-wrapper">
+                            <select id="vehicleType" onchange="app.validateField(this)">
+                                <option value="">Select vehicle type</option>
+                                <option value="bike">🏍️ Bike</option>
+                                <option value="rickshaw">🛺 Rickshaw</option>
+                                <option value="car"> Car</option>
+                            </select>
+                        </div>
+                        <span class="field-error" id="err-vehicleType"></span>
+                    </div>
+
+                    <div class="input-group" id="grp-vehicleNum">
+                        <label for="vehicleNum">
+                            <i class="fa-solid fa-id-card"></i> Number Plate
+                        </label>
+                        <div class="input-wrapper">
+                            <input 
+                                type="text" 
+                                id="vehicleNum" 
+                                placeholder="ABC-1234"
+                                oninput="app.validateField(this)"
+                                style="text-transform: uppercase;"
+                            >
+                        </div>
+                        <span class="field-error" id="err-vehicleNum"></span>
+                    </div>
+
+                    <div class="input-group" id="grp-licenseNum">
+                        <label for="licenseNum">
+                            <i class="fa-solid fa-license"></i> Driving License No.
+                        </label>
+                        <div class="input-wrapper">
+                            <input 
+                                type="text" 
+                                id="licenseNum" 
+                                placeholder="DL-123456789"
+                                oninput="app.validateField(this)"
+                            >
+                        </div>
+                        <span class="field-error" id="err-licenseNum"></span>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="button" class="submit-btn" id="submitBtn" onclick="app.handleSubmit()">
+                    <span class="btn-ripple"></span>
+                    <i class="fa-solid fa-paper-plane btn-icon"></i>
+                    <span id="submitBtnText">Send Verification Link</span>
+                </button>
+
+                <div class="footer-text">
+                    <i class="fa-solid fa-lock"></i>
+                    <span>Aapka data completely secure aur private hai.</span>
+                </div>
+            </form>
+        </section>
     </div>
 
-    <!-- ===== PHONE WRAPPER ===== -->
-    <div class="phone-frame">
+    <!-- Loading Overlay -->
+    <div class="loading-overlay hidden" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Processing...</div>
+    </div>
 
-        <!-- ===== STATUS BAR ===== -->
-        <div class="status-bar">
-            <span class="status-time" id="statusTime">9:41</span>
-            <div class="status-icons">
-                <i class="fa-solid fa-signal"></i>
-                <i class="fa-solid fa-wifi"></i>
-                <i class="fa-solid fa-battery-full"></i>
-            </div>
-        </div>
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
 
-        <!-- ===== SCREEN 1: ROLE SELECTION ===== -->
-        <div id="roleScreen" class="screen screen-active">
-
-            <!-- Hero area -->
-            <div class="hero-section">
-                <div class="hero-bg-pattern"></div>
-                <div class="hero-content">
-                    <div class="app-icon-wrapper">
-                        <div class="app-icon-ring ring-outer"></div>
-                        <div class="app-icon-ring ring-inner"></div>
-                        <div class="app-icon-core">
-                            <i class="fa-solid fa-car-side"></i>
-                        </div>
-                    </div>
-                    <h1 class="app-title">10Chak Drive</h1>
-                    <p class="app-tagline">
-                        <span class="tagline-dot"></span>
-                        Apni Village Ki Apni Ride
-                        <span class="tagline-dot"></span>
-                    </p>
-                    <div class="hero-badge">
-                        <i class="fa-solid fa-location-dot"></i>
-                        <span>Village-First Mobility</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Role Cards -->
-            <div class="role-section">
-                <p class="role-heading">Apna Role Select Karein</p>
-
-                <div class="role-card-container">
-
-                    <button class="role-card role-card--customer" onclick="app.showForm('customer')">
-                        <div class="role-card__icon-wrap">
-                            <div class="role-card__icon">
-                                <i class="fa-solid fa-user-large"></i>
-                            </div>
-                        </div>
-                        <div class="role-card__text">
-                            <span class="role-card__title">Customer (Sawaari)</span>
-                            <span class="role-card__sub">Book your ride easily</span>
-                        </div>
-                        <div class="role-card__arrow">
-                            <i class="fa-solid fa-chevron-right"></i>
-                        </div>
-                    </button>
-
-                    <button class="role-card role-card--rider" onclick="app.showForm('rider')">
-                        <div class="role-card__icon-wrap">
-                            <div class="role-card__icon role-card__icon--amber">
-                                <i class="fa-solid fa-motorcycle"></i>
-                            </div>
-                        </div>
-                        <div class="role-card__text">
-                            <span class="role-card__title">Rider (Driver)</span>
-                            <span class="role-card__sub">Earn with your vehicle</span>
-                        </div>
-                        <div class="role-card__arrow">
-                            <i class="fa-solid fa-chevron-right"></i>
-                        </div>
-                    </button>
-
-                </div>
-
-                <!-- Trust badges -->
-                <div class="trust-strip">
-                    <div class="trust-item">
-                        <i class="fa-solid fa-shield-halved"></i>
-                        <span>Safe Rides</span>
-                    </div>
-                    <div class="trust-divider"></div>
-                    <div class="trust-item">
-                        <i class="fa-solid fa-bolt"></i>
-                        <span>Fast Booking</span>
-                    </div>
-                    <div class="trust-divider"></div>
-                    <div class="trust-item">
-                        <i class="fa-solid fa-hand-holding-heart"></i>
-                        <span>Local Support</span>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-
-
-        <!-- ===== SCREEN 2: REGISTRATION FORM ===== -->
-        <div id="formScreen" class="screen screen-hidden">
-
-            <!-- App bar -->
-            <div class="app-bar">
-                <button class="back-btn" onclick="app.showRoleScreen()" aria-label="Go back">
-                    <i class="fa-solid fa-arrow-left"></i>
-                </button>
-                <div class="app-bar__title-group">
-                    <h2 id="formTitle" class="app-bar__title">Registration</h2>
-                    <span id="formSubtitle" class="app-bar__subtitle">Fill in your details below</span>
-                </div>
-                <div id="formRoleIcon" class="app-bar__role-icon">
-                    <i class="fa-solid fa-user"></i>
-                </div>
-            </div>
-
-            <!-- Form body -->
-            <div class="form-scroll-area">
-
-                <!-- Progress Indicator -->
-                <div class="progress-bar-wrap">
-                    <div class="progress-bar-track">
-                        <div class="progress-bar-fill" id="progressFill"></div>
-                    </div>
-                    <span class="progress-label" id="progressLabel">Step 1 of 2</span>
-                </div>
-
-                <form id="regForm" novalidate>
-
-                    <!-- Common Fields -->
-                    <div class="form-section">
-                        <div class="form-section__label">Personal Info</div>
-
-                        <div class="input-group" id="grp-fullName">
-                            <label for="fullName">
-                                <i class="fa-solid fa-user"></i> Full Name
-                            </label>
-                            <div class="input-wrapper">
-                                <input type="text" id="fullName" autocomplete="name"
-                                       placeholder="Apna pura naam likhein"
-                                       oninput="app.validateField(this)" required>
-                            </div>
-                            <span class="field-error" id="err-fullName"></span>
-                        </div>
-
-                        <div class="input-group" id="grp-phone">
-                            <label for="phone">
-                                <i class="fa-solid fa-phone"></i> Phone Number
-                            </label>
-                            <div class="input-wrapper">
-                                <span class="input-prefix">🇵🇰</span>
-                                <input type="tel" id="phone" autocomplete="tel"
-                                       placeholder="03XXXXXXXXX" maxlength="11"
-                                       oninput="app.validateField(this)" required>
-                            </div>
-                            <span class="field-error" id="err-phone"></span>
-                        </div>
-                    </div>
-
-                    <!-- Rider-only fields -->
-                    <div id="riderFields" class="form-section hidden">
-                        <div class="form-section__label">Vehicle Details</div>
-
-                        <!-- Amber warning banner -->
-                        <div class="info-banner info-banner--amber">
-                            <div class="info-banner__icon">
-                                <i class="fa-solid fa-triangle-exclamation"></i>
-                            </div>
-                            <div class="info-banner__text">
-                                <strong>Verification Notice:</strong> Your driving license will be verified via the official government database before account activation.
-                            </div>
-                        </div>
-
-                        <div class="input-group" id="grp-vehicleType">
-                            <label for="vehicleType">
-                                <i class="fa-solid fa-car"></i> Vehicle Type
-                            </label>
-                            <div class="input-wrapper select-wrapper">
-                                <select id="vehicleType" onchange="app.validateField(this)">
-                                    <option value="Bike">🏍️ Bike</option>
-                                    <option value="Rickshaw">🛺 Rickshaw</option>
-                                    <option value="Car">🚗 Car</option>
-                                </select>
-                                <i class="fa-solid fa-chevron-down select-arrow"></i>
-                            </div>
-                        </div>
-
-                        <div class="input-group" id="grp-vehicleNum">
-                            <label for="vehicleNum">
-                                <i class="fa-solid fa-hashtag"></i> Number Plate
-                            </label>
-                            <div class="input-wrapper">
-                                <input type="text" id="vehicleNum"
-                                       placeholder="e.g. OKA-26-1234"
-                                       oninput="app.validateField(this)"
-                                       style="text-transform:uppercase;">
-                            </div>
-                            <span class="field-error" id="err-vehicleNum"></span>
-                        </div>
-
-                        <div class="input-group" id="grp-licenseNum">
-                            <label for="licenseNum">
-                                <i class="fa-solid fa-id-card"></i> Driving License No.
-                            </label>
-                            <div class="input-wrapper">
-                                <input type="text" id="licenseNum"
-                                       placeholder="Enter license number"
-                                       oninput="app.validateField(this)">
-                            </div>
-                            <span class="field-error" id="err-licenseNum"></span>
-                        </div>
-                    </div>
-                    <div id="recaptcha-container"></div>
-                    <!-- Submit -->
-                    <button type="button" id="submitBtn" class="btn btn-submit" onclick="app.handleSubmit()">
-                        <i class="fa-solid fa-paper-plane btn-icon"></i>
-                        <span id="submitBtnText">Verify via OTP</span>
-                        <div class="btn-ripple"></div>
-                    </button>
-
-                </form>
-
-                <p class="form-footer-note">
-                    <i class="fa-solid fa-lock"></i>
-                    Aapka data completely secure aur private hai.
-                </p>
-
-            </div>
-        </div>
-
-    </div><!-- end phone-frame -->
-
-    <script type="module" src="app.js"></script>
+    <!-- App Script -->
+    <script type="module" src="js/app.js"></script>
 </body>
 </html>
